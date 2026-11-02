@@ -1,0 +1,33 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f3f6f2; color: #1d2b22; }
+main { max-width: 860px; margin: 0 auto; padding: 16px; }
+main.narrow { max-width: 420px; margin-top: 8vh; }
+.top { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #2f7d4f; }
+.top .brand { color: #fff; font-weight: 700; font-size: 1.2rem; text-decoration: none; }
+.card { background: #fff; border-radius: 10px; padding: 16px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.1); display: flex; flex-direction: column; gap: 10px; }
+.card h2 { margin: 0; font-size: 1.1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.snake { text-decoration: none; color: inherit; margin: 0; }
+.badge { font-size: .8rem; padding: 2px 8px; border-radius: 999px; background: #dff0e5; align-self: flex-start; }
+.badge.quarantine { background: #fde8c8; }
+.badge.rest { background: #dde6f5; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
+label.inline { flex-direction: row; align-items: center; gap: 6px; }
+input, select { padding: 8px; border: 1px solid #c3cfc6; border-radius: 6px; font: inherit; }
+button { padding: 8px 14px; border: 0; border-radius: 6px; background: #2f7d4f; color: #fff; font: inherit; cursor: pointer; }
+button.secondary { background: #e3e9e4; color: #1d2b22; }
+button.link { background: none; color: #2f7d4f; padding: 2px 6px; text-decoration: underline; }
+.danger { color: #b3261e !important; }
+button.secondary.danger { background: #fbe4e2; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+.facts { flex-direction: row; justify-content: space-between; flex-wrap: wrap; }
+.facts > div { display: flex; flex-direction: column; gap: 2px; min-width: 150px; }
+.facts strong { font-size: 1.3rem; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.list li { display: flex; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid #eef2ee; }
+.list .grow { flex: 1; }
+.list .date { color: #5b6b60; min-width: 90px; }
+.muted { color: #5b6b60; }
+.error { color: #b3261e; margin: 0; }
+.disclaimer { font-size: .85rem; text-align: center; }

@@ -1,3 +1,9 @@
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql+psycopg://snakelog:snakelog@db:5432/snakelog
+  SECRET_KEY: zmien-mnie-na-demo
+  SMTP_HOST: mailpit
+  SMTP_PORT: "1025"
+
 services:
   db:
     image: postgres:16
@@ -10,6 +16,11 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snakelog -d snakelog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   mailpit:
     image: axllent/mailpit
@@ -17,6 +28,40 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  backend:
+    build: ./backend
+    container_name: snakelog-backend
+    environment: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    build: ./backend
+    container_name: snakelog-worker
+    command: ["python", "-m", "app.worker_loop"]
+    environment: *backend-env
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: snakelog-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
