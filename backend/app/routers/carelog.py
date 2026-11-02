@@ -4,6 +4,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from app.reminder_service import recalc_for_snake
 
 from app.database import get_db
 from app.deps import get_current_user
@@ -47,7 +48,7 @@ def create_event(
     db.add(event)
     db.commit()
     db.refresh(event)
-    # TODO (krok reminders): przeliczyć następny termin przypomnienia po nowym wpisie
+    recalc_for_snake(db, snake_id)
     return event
 
 
@@ -84,6 +85,7 @@ def update_event(
         setattr(event, field, value)
     db.commit()
     db.refresh(event)
+    recalc_for_snake(db, snake_id)
     return event
 
 
@@ -97,6 +99,7 @@ def delete_event(
     event = get_own_event(db, snake_id, event_id, user)
     db.delete(event)
     db.commit()
+    recalc_for_snake(db, snake_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

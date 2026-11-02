@@ -116,3 +116,30 @@ class SnakeCard(BaseModel):
 class WeightPoint(BaseModel):
     date: date
     weight_g: float
+
+ReminderType = Literal["feeding", "weighing", "cleaning"]
+ReminderStatus = Literal["active", "paused"]
+
+
+class ReminderCreate(BaseModel):
+    type: ReminderType
+    interval_days: int = Field(ge=1, le=365)
+    next_due: date | None = None  # puste = ostatni wpis + interwał
+
+
+class ReminderUpdate(BaseModel):
+    interval_days: int | None = Field(default=None, ge=1, le=365)
+    next_due: date | None = None
+    status: ReminderStatus | None = None
+
+
+class ReminderOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    snake_id: uuid.UUID
+    type: str
+    next_due: date
+    interval_days: int
+    channel: str
+    status: str
