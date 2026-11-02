@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16
+    container_name: snakelog-db
+    environment:
+      POSTGRES_USER: snakelog
+      POSTGRES_PASSWORD: snakelog
+      POSTGRES_DB: snakelog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: snakelog-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  pgdata:
