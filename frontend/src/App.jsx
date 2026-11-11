@@ -5,6 +5,9 @@ import Alerts from './pages/Alerts'
 import Login from './pages/Login'
 import Snakes from './pages/Snakes'
 import SnakeDetail from './pages/SnakeDetail'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import Profile from './pages/Profile'
 
 function Layout({ children }) {
   const navigate = useNavigate()
@@ -34,6 +37,7 @@ function Layout({ children }) {
           <Link to="/alerts" className="navlink">
             Alerty{unread > 0 && <span className="count">{unread}</span>}
           </Link>
+          <Link to="/profile" className="navlink">Profil</Link>
           <button onClick={logout}>Wyloguj</button>
         </nav>
       </header>
@@ -51,6 +55,9 @@ export default function App() {
         <Route path="/snakes/:id" element={<Layout><SnakeDetail /></Layout>} />
         <Route path="/alerts" element={<Layout><Alerts /></Layout>} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/profile" element={<Layout><Profile /></Layout>} />
       </Routes>
     </BrowserRouter>
   )

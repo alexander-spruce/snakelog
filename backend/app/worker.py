@@ -9,6 +9,8 @@ from app.config import settings
 from app.database import SessionLocal
 from app.models import Reminder, Snake, User
 
+from app.mailer import send
+
 LABELS = {
     "feeding": "karmienie",
     "weighing": "ważenie",
@@ -19,11 +21,6 @@ ALERT_LABELS = {
     "no_growth_young": "brak wzrostu u młodego węża",
     "feeding_refusal": "długa odmowa jedzenia",
 }
-
-
-def send(msg: EmailMessage) -> None:
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
-        smtp.send_message(msg)
 
 
 def build_message(to: str, snake_name: str, reminder_type: str, due: date) -> EmailMessage:

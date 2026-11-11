@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { api, setToken } from '../api'
 
 export default function Login() {
@@ -43,6 +43,7 @@ export default function Login() {
                 onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}>
           {mode === 'login' ? 'Nie masz konta? Zarejestruj się' : 'Masz konto? Zaloguj się'}
         </button>
+          {mode === 'login' && <Link to="/forgot-password">Nie pamiętasz hasła?</Link>}
       </form>
     </main>
   )

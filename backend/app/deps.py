@@ -18,6 +18,8 @@ def get_current_user(
     error = HTTPException(status.HTTP_401_UNAUTHORIZED, "Nieprawidłowy token")
     try:
         payload = decode_token(token)
+        if payload.get("purpose"):
+            raise ValueError("to nie jest token dostępu")
         user_id = uuid.UUID(payload["sub"])
     except (jwt.PyJWTError, KeyError, ValueError):
         raise error

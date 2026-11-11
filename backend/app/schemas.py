@@ -172,3 +172,21 @@ class AlertRuleUpdate(BaseModel):
     threshold: float | None = Field(default=None, gt=0)
     window_days: int | None = Field(default=None, ge=1, le=365)
     enabled: bool | None = None
+
+class ForgotPassword(BaseModel):
+    email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class ProfileUpdate(BaseModel):
+    email: EmailStr
+    current_password: str

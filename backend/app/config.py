@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     secret_key: str = "zmien-mnie-na-demo"
     smtp_host: str = "localhost"
     smtp_port: int = 1025
+    frontend_url: str = "http://localhost:8080"
 
     model_config = SettingsConfigDict(env_file=".env")
 
