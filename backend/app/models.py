@@ -81,3 +81,25 @@ class Reminder(Base):
     interval_days: Mapped[int] = mapped_column(Integer)
     channel: Mapped[str] = mapped_column(String(16), default="email")
     status: Mapped[str] = mapped_column(String(16), default="active")
+
+class AlertRule(Base):
+    __tablename__ = "alert_rules"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    type: Mapped[str] = mapped_column(String(32), unique=True)
+    threshold: Mapped[float] = mapped_column(Numeric)
+    window_days: Mapped[int] = mapped_column(Integer)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class HealthAlert(Base):
+    __tablename__ = "health_alerts"
+    __table_args__ = (Index("ix_health_alerts_snake_created", "snake_id", "created_at"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    snake_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("snakes.id", ondelete="CASCADE"))
+    rule_id: Mapped[int] = mapped_column(ForeignKey("alert_rules.id"))
+    type: Mapped[str] = mapped_column(String(32))
+    message: Mapped[str] = mapped_column(Text)
+    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

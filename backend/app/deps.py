@@ -25,3 +25,8 @@ def get_current_user(
     if user is None or user.is_blocked:
         raise error
     return user
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Wymagana rola administratora")
+    return user

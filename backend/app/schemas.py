@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
@@ -143,3 +143,32 @@ class ReminderOut(BaseModel):
     interval_days: int
     channel: str
     status: str
+
+class AlertOut(BaseModel):
+    id: uuid.UUID
+    snake_id: uuid.UUID
+    snake_name: str
+    type: str
+    message: str
+    is_read: bool
+    created_at: datetime
+
+
+class UnreadCount(BaseModel):
+    count: int
+
+
+class AlertRuleOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    type: str
+    threshold: float
+    window_days: int
+    enabled: bool
+
+
+class AlertRuleUpdate(BaseModel):
+    threshold: float | None = Field(default=None, gt=0)
+    window_days: int | None = Field(default=None, ge=1, le=365)
+    enabled: bool | None = None

@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timedelta
 
-from app.worker import run_once
+from app.worker import run_daily
 
 RUN_HOUR = 8  # godzina uruchomienia dziennego (czas kontenera, UTC)
 
@@ -16,7 +16,7 @@ def seconds_until_next_run() -> float:
 
 def safe_run() -> None:
     try:
-        run_once()
+        run_daily()
     except Exception as exc:  # worker ma przeżyć błąd jednego uruchomienia
         print(f"[worker] BŁĄD uruchomienia: {exc}")
 

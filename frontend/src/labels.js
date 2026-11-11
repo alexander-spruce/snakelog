@@ -19,3 +19,9 @@ export function describeEvent(e) {
   if (e.type === 'shed') return SHED[e.note_category] ?? ''
   return [OTHER[e.note_category], e.note].filter(Boolean).join(': ')
 }
+
+export const ALERT_TYPE = {
+  weight_drop: 'Spadek wagi',
+  no_growth_young: 'Brak wzrostu u młodego węża',
+  feeding_refusal: 'Długa odmowa jedzenia',
+}

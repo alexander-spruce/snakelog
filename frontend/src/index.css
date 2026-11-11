@@ -31,3 +31,7 @@ button.secondary.danger { background: #fbe4e2; }
 .muted { color: #5b6b60; }
 .error { color: #b3261e; margin: 0; }
 .disclaimer { font-size: .85rem; text-align: center; }
+.navlink { color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.count { background: #e5484d; color: #fff; border-radius: 999px; padding: 0 7px; font-size: .8rem; font-weight: 700; }
+.card.alert { border-left: 4px solid #c3cfc6; }
+.card.alert.unread { border-left-color: #e5484d; background: #fff8f7; }

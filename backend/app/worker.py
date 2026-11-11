@@ -4,6 +4,7 @@ from email.message import EmailMessage
 
 from sqlalchemy import select
 
+from app.alert_service import generate_alerts
 from app.config import settings
 from app.database import SessionLocal
 from app.models import Reminder, Snake, User
@@ -13,6 +14,16 @@ LABELS = {
     "weighing": "ważenie",
     "cleaning": "czyszczenie terrarium",
 }
+ALERT_LABELS = {
+    "weight_drop": "spadek wagi",
+    "no_growth_young": "brak wzrostu u młodego węża",
+    "feeding_refusal": "długa odmowa jedzenia",
+}
+
+
+def send(msg: EmailMessage) -> None:
+    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
+        smtp.send_message(msg)
 
 
 def build_message(to: str, snake_name: str, reminder_type: str, due: date) -> EmailMessage:
@@ -28,7 +39,21 @@ def build_message(to: str, snake_name: str, reminder_type: str, due: date) -> Em
     return msg
 
 
+def build_alert_message(to: str, snake_name: str, alert_type: str, text: str) -> EmailMessage:
+    label = ALERT_LABELS.get(alert_type, alert_type)
+    msg = EmailMessage()
+    msg["From"] = "SnakeLog <no-reply@snakelog.local>"
+    msg["To"] = to
+    msg["Subject"] = f"SnakeLog: alert zdrowotny, {label} ({snake_name})"
+    msg.set_content(
+        f"Cześć!\n\nAlert dla węża {snake_name}: {label}.\n\n{text}\n\n"
+        "Szczegóły znajdziesz w zakładce Alerty w aplikacji.\n\nSnakeLog"
+    )
+    return msg
+
+
 def run_once(today: date | None = None) -> int:
+    """Przypomnienia (P5)."""
     today = today or date.today()
     sent = 0
     with SessionLocal() as db:
@@ -46,8 +71,7 @@ def run_once(today: date | None = None) -> int:
         for reminder, snake, user in rows:
             msg = build_message(user.email, snake.name, reminder.type, reminder.next_due)
             try:
-                with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
-                    smtp.send_message(msg)
+                send(msg)
             except (smtplib.SMTPException, OSError) as exc:
                 print(f"[worker] BŁĄD wysyłki do {user.email}: {exc}")
                 continue  # termin zostaje, spróbujemy następnego dnia
@@ -58,9 +82,31 @@ def run_once(today: date | None = None) -> int:
             db.commit()
             sent += 1
             print(f"[worker] wysłano: {reminder.type} / {snake.name} -> {user.email}")
-    print(f"[worker] gotowe, wysłano {sent}")
+    print(f"[worker] przypomnienia gotowe, wysłano {sent}")
     return sent
 
 
+def run_alerts(today: date | None = None) -> int:
+    """Alerty zdrowotne (P4): analiza, zapis i powiadomienie e-mailem."""
+    with SessionLocal() as db:
+        created = generate_alerts(db, today)
+    for text, email, snake_name, alert_type in created:
+        try:
+            send(build_alert_message(email, snake_name, alert_type, text))
+            print(f"[worker] alert {alert_type} / {snake_name} -> {email}")
+        except (smtplib.SMTPException, OSError) as exc:
+            print(f"[worker] BŁĄD wysyłki alertu do {email}: {exc}")  # alert i tak jest w aplikacji
+    print(f"[worker] alerty gotowe, utworzono {len(created)}")
+    return len(created)
+
+
+def run_daily() -> None:
+    for job in (run_alerts, run_once):
+        try:
+            job()
+        except Exception as exc:  # błąd jednego zadania nie blokuje drugiego
+            print(f"[worker] BŁĄD zadania {job.__name__}: {exc}")
+
+
 if __name__ == "__main__":
-    run_once()
+    run_daily()
